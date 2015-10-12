@@ -1,0 +1,10 @@
+/bin
+/coverage
+/dist
+/reference/bin
+/reference/generated
+/ivy-lib
+/rpm/BUILDROOT
+/rpm/RPMS
+/test/bin
+/test/reports

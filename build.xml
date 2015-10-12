@@ -1,0 +1,411 @@
+<?xml version="1.0" standalone="yes"?>
+<project name="com.servicemesh.agility.adapters.core.azure" basedir="."
+ default="help" xmlns:ivy="antlib:org.apache.ivy.ant">
+
+   <!-- =====================================================================
+        Definitions
+        ================================================================= -->
+   <!-- base properties -->
+   <property name="common.basedir" value="${basedir}/../agility-platform-sdk"/>
+   <property name="common.ivy.lib" value="${common.basedir}/ivy-lib"/>
+   <property name="common.dist" value="${common.basedir}/dist"/>
+   <property name="common.lib" value="${common.basedir}/lib"/>
+   <property name="common.io.lib"
+             value="${common.basedir}/com.servicemesh.io/lib"/>
+
+   <available file="${common.ivy.lib}" type="dir" property="common.present"/>
+   <fail unless="common.present"
+         message="This project requires a built ${common.basedir}"/>
+
+   <property name="src" value="src"/>
+   <property name="bin" value="bin"/>
+   <property name="dist" value="dist"/>
+   <property name="lib" value="lib"/>
+   <property name="ivy.lib" value="ivy-lib" />
+   <property name="test.unit" value="test/unit"/>
+   <property name="test.src" value="${test.unit}/src"/>
+   <property name="test.schema" value="${test.unit}/schema"/>
+   <property name="test.schema.bin" value="${test.schema}/bin"/>
+   <property name="test.schema.gen" value="${test.schema}/generated"/>
+   <property name="test.schema.jar" value="${test.schema}/bin/azureTest.jar"/>
+   <property name="test.bin" value="test/bin"/>
+   <property name="test.reports" value="test/reports"/>
+
+   <property name="version.major" value="1"/>
+   <property name="version.minor" value="0"/>
+   <property name="version.build" value="0"/>
+   <property name="bundle.version"
+             value="${version.major}.${version.minor}.${version.build}"/>
+   <property name="bundle.name" value="${ant.project.name}-${bundle.version}"/>
+   <property name="bundle.jar" value="${bundle.name}.jar"/>
+   <property name="bin.bundle.jar" value = "${bin}/${bundle.jar}"/>
+
+   <property name="javadoc.dir" value="${bin}/javadoc"/>
+   <property name="javadoc.jar" value="${bundle.name}-doc.jar"/>
+   <property name="bin.javadoc.jar" value = "${bin}/${javadoc.jar}"/>
+
+   <property name="rpm" value="rpm"/>
+   <property name="rpm.spec" value="${rpm}/SPECS"/>
+   <property name="rpm.arch" value="noarch"/>
+   <property name="rpm.rpms" value="${rpm}/RPMS/${rpm.arch}"/>
+   <property name="rpm.basename" value="agility-adapters-core-azure"/>
+   <property name="rpm.version"
+             value="${version.major}.${version.minor}-${version.build}"/>
+   <property name="rpm.name" value="${rpm.basename}-${rpm.version}"/>
+
+   <!-- Coverage properties -->
+   <property name="coverage.dir" value="${basedir}/coverage"/>
+   <property name="coverage.datafile.base" value="cobertura.ser"/>
+   <property name="coverage.datafile"
+             value="${coverage.dir}/${coverage.datafile.base}"/>
+   <property name="coverage.report.dir" value="${coverage.dir}/report"/>
+   <property name="coverage.debug" value="false"/>
+   <property name="coverage.format" value="xml"/>
+
+   <!-- classpaths -->
+   <path id="compile.classpath">
+      <fileset dir="${common.ivy.lib}">
+         <include name="log4j-*.jar"/>
+      </fileset>
+      <fileset dir="${common.dist}">
+         <include name="com.servicemesh.agility.api-*.jar" />
+         <include name="com.servicemesh.core-*.jar"/>
+         <include name="com.servicemesh.io-*.jar"/>
+      </fileset>
+      <fileset dir="${ivy.lib}">
+         <include name="commons-codec-*.jar"/>
+         <include name="gson-*.jar"/>
+      </fileset>
+   </path>
+
+   <path id="test.compile.classpath">
+      <pathelement location="${bin}"/>
+      <pathelement location="${test.schema.jar}"/>
+      <path refid="compile.classpath"/>
+      <fileset dir="${common.ivy.lib}">
+         <include name="commons-logging-*.jar"/>
+         <include name="javassist-*.jar"/>
+         <include name="junit-*.jar"/>
+         <include name="mockito-all-*.jar"/>
+      </fileset>
+      <fileset dir="${common.lib}">
+         <include name="powermock-mockito-*.jar"/>
+      </fileset>
+   </path>
+
+   <path id="cobertura.classpath">
+      <fileset dir="${common.lib}">
+         <include name="cobertura*.jar"/>
+      </fileset>
+      <fileset dir="${common.ivy.lib}">
+         <include name="asm-5*.jar"/>
+         <include name="asm-analysis*.jar"/>
+         <include name="asm-commons*.jar"/>
+         <include name="asm-tree*.jar"/>
+         <include name="asm-util*.jar"/>
+         <include name="commons-lang3-*.jar"/>
+         <include name="commons-logging-*.jar"/>
+         <include name="log4j-*.jar"/>
+         <include name="oro-*.jar"/>
+         <include name="slf4j-api*.jar"/>
+         <include name="slf4j-log*.jar"/>
+      </fileset>
+   </path>
+
+   <path id="test.classpath">
+      <path refid="cobertura.classpath"/>
+      <path refid="test.compile.classpath"/>
+      <pathelement location="${test.bin}"/>
+      <fileset dir="${common.ivy.lib}">
+         <include name="guava-*.jar"/>
+      </fileset>
+      <fileset dir="${common.io.lib}">
+         <include name="httpasyncclient-*.jar"/>
+         <include name="httpclient-*.jar"/>
+         <include name="httpcore-*.jar"/>
+      </fileset>
+   </path>
+
+   <path id="groovy.classpath">
+      <fileset dir="${common.ivy.lib}">
+         <include name="groovy-all-*.jar"/>
+      </fileset>
+   </path>
+
+   <path id="xjc.classpath">
+      <fileset dir="${common.ivy.lib}">
+         <include name="jaxb-impl-*.jar"/>
+         <include name="jaxb-xjc-*.jar"/>
+      </fileset>
+   </path>
+
+   <!-- task definitions -->
+   <taskdef name="xjc" classname="com.sun.tools.xjc.XJC2Task"
+            classpathref="xjc.classpath"/>
+
+   <!-- =====================================================================
+        Build targets
+        ================================================================= -->
+   <target name="init">
+      <mkdir dir="${bin}"/>
+      <mkdir dir="${test.bin}"/>
+      <mkdir dir="${test.reports}"/>
+      <mkdir dir="${test.schema.bin}"/>
+      <mkdir dir="${test.schema.gen}"/>
+      <mkdir dir="${ivy.lib}"/>
+
+      <ivy:retrieve pattern="${ivy.lib}/[module]-[revision].[ext]"/>
+   </target>
+
+   <target name="compile" depends="init"
+           description="Compile all source files">
+      <echo message="Compiling the java source files..."/>
+      <javac destdir="${bin}" debug="on" fork="true" includeantruntime="false">
+         <src path="${src}"/>
+         <classpath>
+            <path refid="compile.classpath"/>
+         </classpath>
+      </javac>
+   </target>
+
+   <target name="unit_test_compile"
+           description="Compile all unit test source files"
+           depends="init,compile,unit_test_schema">
+      <echo message="Compiling the unit test source files..."/>
+      <javac destdir="${test.bin}" debug="on" fork="true"
+             includeantruntime="false">
+         <src path="${test.src}"/>
+         <classpath>
+            <path refid="test.compile.classpath"/>
+         </classpath>
+      </javac>
+   </target>
+
+   <target name="unit_test_schema" depends="init"
+           description="Generate reference jaxb classes from xsd file">
+      <xjc schema="${test.schema}/azureTest.xsd" extension="true"
+           package="com.microsoft.schemas.azure.trafficmgr"
+           destdir="${test.schema.gen}">
+         <depends dir="." includes="./azureTest.xsd"/>
+         <produces dir="${test.schema.gen}/com/microsoft/schemas/azure/trafficmgr"
+                   includes="*.java"/>
+      </xjc>
+      <javac destdir="${test.schema.bin}" debug="on" fork="true"
+             classpathref="xjc.classpath" includeantruntime="false">
+         <src path="${test.schema.gen}"/>
+      </javac>
+      <delete file="${test.schema.jar}"/>
+      <jar destfile="${test.schema.jar}" basedir="${test.schema.bin}">
+         <fileset dir="${test.schema.gen}" includes="**/*.class"/>
+      </jar>
+   </target>
+
+   <target name="deploy" depends="compile,deploy_unit_test,git-info"
+           description="Generate and deploy bundle">
+      <delete file="${bin.bundle.jar}"/>
+      <property name="manifest" value="${bin}/META-INF/MANIFEST.MF"/>
+      <copy file="META-INF/MANIFEST.MF" tofile="${manifest}" overwrite="true"/>
+      <replace file="${manifest}" token="%bundle_version"
+               value="${bundle.version}"/>
+      <echo file="${manifest}" append="true"
+            message="Bundle-Description: Common communications and utilities for Agility Microsoft Azure adapters. Revision r${git.summary}.${line.separator}"/>
+      <jar destfile="${bin.bundle.jar}" manifest="${manifest}" basedir="${bin}">
+         <fileset dir="${bin}" includes="**/*.class"/>
+         <fileset dir="${ivy.lib}" includes="gson-*.jar"/>
+         <fileset dir="${basedir}" includes="LICENSE"/>
+      </jar>
+   </target>
+
+   <target name="unit_test" depends="unit_test_compile"
+           description="Run unit tests">
+      <junit fork="yes" haltonfailure="yes" printsummary="withOutAndErr">
+         <classpath>
+            <path refid="test.classpath"/>
+         </classpath>
+         <formatter type="xml"/>
+         <sysproperty key="net.sourceforge.cobertura.datafile"
+                      value="${coverage.datafile}"/>
+         <batchtest fork="yes" todir="${test.reports}">
+            <fileset dir="${test.src}">
+               <include name="**/*Test*.java"/>
+               <exclude name="**/AllTests.java"/>
+               <exclude name="**/TestHelpers.java"/>
+            </fileset>
+         </batchtest>
+      </junit>
+   </target>
+
+   <target name="deploy_unit_test" unless="coverage_requested">
+      <antcall target="unit_test"/>
+   </target>
+
+   <!-- =====================================================================
+        Coverage
+        ================================================================= -->
+   <target name="init_coverage" description="Initialize coverage tool">
+      <mkdir dir="coverage"/>
+      <taskdef classpathref="cobertura.classpath" resource="tasks.properties"/>
+      <taskdef name="groovy" classpathref="groovy.classpath"
+               classname="org.codehaus.groovy.ant.Groovy"/>
+   </target>
+
+   <target name="instrument_coverage" depends="init_coverage"
+           description="Instrument source code for coverage measurement">
+      <echo message="Instrumenting to ${coverage.datafile}"/>
+      <cobertura-instrument datafile="${coverage.datafile}">
+         <fileset dir="${bin}">
+            <include name="**/*.class"/>
+         </fileset>
+      </cobertura-instrument>
+   </target>
+
+   <target name="do-coverage-report" depends="instrument_coverage,unit_test">
+      <groovy><![CDATA[
+      def topSrcDir = new File(properties.'basedir')
+      ant.'cobertura-report'(format:properties.'coverage.format',
+                             datafile:properties.'coverage.datafile',
+                             destdir:properties.'coverage.report.dir') {
+         topSrcDir.eachDirRecurse { dir ->
+            if (dir.name == 'src') {
+               if (properties.'coverage.debug' == 'true') {
+                  println "$dir";
+               }
+               fileset(dir:dir) {
+                  include(name:'**/*.java')
+               }
+            }
+         }
+      }
+      ]]></groovy>
+   </target>
+
+   <target name="coverage-report" description="Generate coverage report">
+      <antcall target="do-coverage-report">
+          <param name="coverage.format" value="${coverage.format}"/>
+       </antcall>
+   </target>
+
+   <!-- =====================================================================
+        Documentation
+        ================================================================= -->
+
+   <target name="javadoc" description="Generate documentation">
+      <javadoc
+        destdir="${javadoc.dir}"
+        author="false"
+        version="true"
+        use="true"
+        Public="true"
+        windowtitle="Agility Platform Adapter Core Azure">
+
+      <classpath>
+        <pathelement path="${bin}/com"/>
+        <path refid="compile.classpath"/>
+      </classpath>
+
+      <fileset dir="${src}/com">
+        <include name="**/*.java"/>
+        <exclude name="**/impl/**"/>
+      </fileset>
+
+      <doctitle><![CDATA[<h1>Agility Platform Adapter Core Azure</h1>]]></doctitle>
+      <bottom><![CDATA[<i>Copyright &#169; 2013-Present Computer Sciences Corporation</i>]]></bottom>
+      <link offline="true"
+            href="http://docs.oracle.com/javase/8/docs/api"
+            packagelistLoc="../../root"/>
+      </javadoc>
+
+      <jar destfile="${bin.javadoc.jar}" basedir="${javadoc.dir}">
+         <fileset dir="${javadoc.dir}" includes="*"/>
+         <fileset dir="${basedir}" includes="LICENSE"/>
+      </jar>
+   </target>
+
+   <!-- =====================================================================
+        Distribution targets
+        ================================================================= -->
+   <target name="git-info" unless="git.summary">
+      <exec executable="bash" outputproperty="git.revision">
+         <arg value="-c" />
+         <arg value="git rev-list HEAD | wc -l | sed 's/^ *//'"/>
+      </exec>
+      <exec executable="bash" outputproperty="git.commit">
+         <arg value="-c" />
+         <arg value="git log -n1 --pretty=format:%h HEAD" />
+      </exec>
+      <property name="git.summary" value="${git.revision}.${git.commit}"/>
+   </target>
+
+   <target name="rpm-build" depends="deploy,git-info">
+        <mkdir dir="${rpm.rpms}"/>
+        <property name="buildroot"
+         value="${rpm}/BUILDROOT/${rpm.name}"/>
+        <delete dir="${buildroot}"/>
+        <copy todir="${buildroot}/opt/agility-platform/deploy"
+              file="${bin.bundle.jar}"/>
+        <loadfile property="license.text" srcFile="${basedir}/LICENSE"/>
+        <property name="spec" value="${rpm.basename}_mod.spec"/>
+        <property name="specfile" value="${rpm.spec}/${spec}"/>
+        <copy file="${rpm.spec}/${rpm.basename}.spec"
+              tofile="${specfile}" overwrite="true"/>
+        <replace file="${specfile}" token="%license_text"
+                 value="${license.text}"/>
+        <resources id="rpm.args">
+          <string>-bb</string>
+          <string>--define '_topdir ${basedir}/${rpm}'</string>
+          <!-- Agility convention is to only put major.minor as RPM version -->
+          <string>--define 'rpm_version ${version.major}.${version.minor}'</string>
+          <string>--define 'rpm_revision ${version.build}.r${git.summary}'</string>
+          <string>--buildroot ${basedir}/${buildroot}</string>
+        </resources>
+        <pathconvert property="rpm.command" refid="rpm.args"
+                     pathsep=" "/>
+        <rpm specFile="${spec}" topDir="${rpm}"
+             failOnError="true" command="${rpm.command}"/>
+        <delete file="${specfile}"/>
+   </target>
+
+   <!-- =====================================================================
+        Cleanup
+        ================================================================= -->
+   <target name="clean" depends="clean_test,clean_rpm"
+           description="Deletes all generated artifacts.">
+      <delete dir="${bin}"/>
+      <delete dir="${dist}"/>
+      <delete dir="${test.schema.bin}"/>
+      <delete dir="${test.schema.gen}"/>
+      <delete dir="${ivy.lib}"/>
+   </target>
+
+   <target name="clean_test" description="Deletes all test artifacts.">
+      <delete dir="${test.bin}"/>
+      <delete dir="${test.reports}"/>
+      <delete dir="${coverage.dir}"/>
+   </target>
+
+   <target name="clean_rpm" description="Deletes all generated RPM artifacts.">
+      <delete dir="${rpm}/BUILD" />
+      <delete dir="${rpm}/BUILDROOT" />
+      <delete dir="${rpm}/RPMS" />
+      <delete dir="${rpm}/SOURCES" />
+      <delete dir="${rpm}/SRPMS" />
+   </target>
+
+   <!-- =====================================================================
+        CI and help
+        ================================================================= -->
+   <target name="ci" description="Continuous Integration target">
+      <antcall target="clean"/>
+      <property name="coverage_requested" value="true"/>
+      <antcall target="deploy"/>
+      <antcall target="rpm-build"/>
+      <antcall target="javadoc"/>
+      <antcall target="coverage-report"/>
+   </target>
+
+   <target name="help">
+      <java classname="org.apache.tools.ant.Main">
+         <arg value="-projecthelp"/>
+      </java>
+   </target>
+</project>
