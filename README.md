@@ -31,7 +31,7 @@ If you want to edit core.azure using Eclipse you'll need to define Eclipse build
 Examples of utilizing the core.azure bundle with an Azure API is provided with the unit test:
 * TestTrafficMgrIntegration.java: Microsoft Azure Traffic Manager&trade;
 
-Two complete reference implementations that utilize the Agility Platform Services SDK and the core.azure bundle are provided under
+Two complete reference implementations that utilize the Agility Platform Services SDK and the core.azure bundle are provided under the [agility-platform-services-sdk-reference-info project](https://github.com/csc/agility-platform-services-sdk-reference-info).
 
 * com.servicemesh.agility.adapters.service.azure.sql is an Agility Platform
   service adapter to the Microsoft Azure SQL&trade; service.
