@@ -218,6 +218,7 @@
 
    <target name="unit_test" depends="unit_test_compile"
            description="Run unit tests">
+      <property file="${basedir}/junit.properties"/>
       <junit fork="yes" haltonfailure="yes" printsummary="withOutAndErr">
          <classpath>
             <path refid="test.classpath"/>
@@ -225,6 +226,10 @@
          <formatter type="xml"/>
          <sysproperty key="net.sourceforge.cobertura.datafile"
                       value="${coverage.datafile}"/>
+         <sysproperty key="azure_certificate" value="${azure_certificate}"/>
+         <sysproperty key="azure_certificate_password"
+                      value="${azure_certificate_password}"/>
+         <sysproperty key="azure_subscription" value="${azure_subscription}"/>
          <batchtest fork="yes" todir="${test.reports}">
             <fileset dir="${test.src}">
                <include name="**/*Test*.java"/>
@@ -375,6 +380,7 @@
       <delete dir="${test.schema.bin}"/>
       <delete dir="${test.schema.gen}"/>
       <delete dir="${ivy.lib}"/>
+      <delete file="${basedir}/apidocs.log"/>
    </target>
 
    <target name="clean_test" description="Deletes all test artifacts.">
