@@ -32,7 +32,7 @@
    <property name="test.reports" value="test/reports"/>
 
    <property name="version.major" value="1"/>
-   <property name="version.minor" value="0"/>
+   <property name="version.minor" value="1"/>
    <property name="version.build" value="0"/>
    <property name="bundle.version"
              value="${version.major}.${version.minor}.${version.build}"/>
