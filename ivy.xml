@@ -3,7 +3,7 @@
 
   <dependencies>
     <dependency org="commons-codec" name="commons-codec" rev="1.4">
-      <artifact name="commons-codec-1.4" type="jar" ext="jar" />
+      <artifact name="commons-codec" type="jar" ext="jar" />
     </dependency>
     <dependency org="com.google.code.gson" name="gson" rev="2.2.4">
       <artifact name="gson" type="jar" ext="jar" />
