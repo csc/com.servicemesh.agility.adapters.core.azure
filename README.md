@@ -18,14 +18,7 @@ log4j.logger.com.servicemesh.agility.adapters.core.azure=TRACE
 To only enable the *DEBUG* level, use *DEBUG* instead of *TRACE* in `com.servicemesh.agility.logging.cfg`.
 
 ### Build Configuration
-core.azure is compatible with Java 8 and ant 1.9.3.
-
-core.azure is dependent on the [csc-agility-platform-sdk project](https://github.com/csc/csc-agility-platform-sdk). The core.azure ant build file requires that csc-agility-platform-sdk be built first.
-
-If you want to edit core.azure using Eclipse you'll need to define Eclipse build path variables:
-* IVY-LIB: Contains the path to the *ivy-lib* directory under csc-agility-platform-sdk
-* COMMON-LIB: Contains the path to the *lib* directory under csc-agility-platform-sdk
-* DIST: Contains the path to the *dist* directory under csc-agility-platform-sdk
+core.azure is compatible with Java 8 and ant 1.9.3 and requires Ivy.
 
 ### Reference Implementations
 Examples of utilizing the core.azure bundle with an Azure API is provided with the unit test:
