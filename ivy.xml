@@ -76,5 +76,8 @@
       <dependency org="com.google.guava" name="guava" rev="16.0.1">
          <artifact name="guava" type="jar" ext="jar" />
       </dependency>
+      <dependency org="org.apache.commons" name="commons-lang3" rev="3.3.2">
+         <artifact name="commons-lang3" type="jar" ext="jar" />
+      </dependency>
   </dependencies>
 </ivy-module>
