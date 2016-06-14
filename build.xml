@@ -358,7 +358,7 @@
       </copy>
       <copy file="ivy.xml"
       tofile="${dist}/ivy-${bundle.version}.r${git.summary}.xml"/>
-      <exec executable="publishToBintray.sh">
+      <exec executable="${basedir}/publishToBintray.sh">
          <arg value="${bundle.version}.r${git.summary}"/>
          <arg value="${bintray.user}"/>
          <arg value="${bintray.key}"/>
