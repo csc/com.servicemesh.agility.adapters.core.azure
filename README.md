@@ -44,5 +44,9 @@ To generate and view code coverage metrics, open the coverage/report/index.html 
 $ ant clean compile coverage-report -Dcoverage.format=html
 ```
 
+## Compiled Artifacts
+Artifacts produced by a CI build of this repository are published to https://bintray.com/csc/opensource/com.servicemesh.agility.adapters.core.azure
+
+
 ## License
-core.azure is distributed under the Apache 2.0 license. See the [LICENSE](https://github.com/csc/com.servicemesh.agility.adapters.core.azure/blob/master/LICENSE) file for full details.
+Core Azure is distributed under the Apache 2.0 license. See the [LICENSE](https://github.com/csc/com.servicemesh.agility.adapters.core.azure/blob/master/LICENSE) file for full details.
