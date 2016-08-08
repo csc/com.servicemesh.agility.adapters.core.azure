@@ -3,7 +3,7 @@
 The Core Azure bundle is provided to aid in the development of a CSC Agility Platform&trade; adapter for Microsoft Azure&trade;. This bundle provides communications and utility functions for interacting with Microsoft Azure.
 
 ## Core Azure Usage
-The primary interfaces in core.azure for communications are:
+The primary interfaces in Core Azure for communications are:
 * com.servicemesh.agility.adapters.core.azure.AzureConnection
 * com.servicemesh.agility.adapters.core.azure.AzureEndpoint
 
